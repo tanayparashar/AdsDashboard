@@ -20,7 +20,7 @@ export const CreateCampaign=()=>{
     const [edate,sedate]=useState()
     async function getProducts()
     {
-        let res=await fetch("http://localhost:5000/api/v1/product");
+        let res=await fetch("https://ads-dashboard-backend.herokuapp.com/api/v1/product");
         res=await res.json();
         let x=res.map((ele)=>{
             return {label:ele.name,value:ele._id}
@@ -50,7 +50,7 @@ export const CreateCampaign=()=>{
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(obj)           
         };
-        await fetch('http://localhost:5000/api/v1/campaign', requestOptions);
+        await fetch('https://ads-dashboard-backend.herokuapp.com/api/v1/campaign', requestOptions);
         navigate("/");
     }
 

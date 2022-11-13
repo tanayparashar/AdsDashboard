@@ -18,7 +18,7 @@ import { Filter } from '@mui/icons-material';
 
 
 
-var url="http://localhost:5000/api/v1/campaign";
+var url="https://ads-dashboard-backend.herokuapp.com/api/v1/campaign";
 const leftToolbarTemplate = () => {
     return (
         <React.Fragment>
@@ -121,7 +121,7 @@ export const Dashboard = () => {
         }
         async function deleteC(id)
         {
-            await fetch("http://localhost:5000/api/v1/campaign/"+id, { method: 'DELETE' });
+            await fetch("https://ads-dashboard-backend.herokuapp.com/api/v1/campaign/"+id, { method: 'DELETE' });
             getCampaigns();
         }
         return (
@@ -139,7 +139,7 @@ export const Dashboard = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({"status": !val})
             };
-            await fetch("http://localhost:5000/api/v1/campaign/"+id, requestOptions);
+            await fetch("https://ads-dashboard-backend.herokuapp.com/api/v1/campaign/"+id, requestOptions);
             getCampaigns();
         }
         return(
@@ -158,7 +158,7 @@ export const Dashboard = () => {
         let url="";
         if(platform!=="" && range!=="")
         {
-            url="http://localhost:5000/api/v1/campaign?platform="+platform+"&days="+range;
+            url="https://ads-dashboard-backend.herokuapp.com/api/v1/campaign?platform="+platform+"&days="+range;
             let res=await fetch(url);
             let data=await res.json();
             if(res.ok)
@@ -176,7 +176,7 @@ export const Dashboard = () => {
         else if(platform!=="")
         {
             console.log()
-            url="http://localhost:5000/api/v1/campaign?platform="+platform;
+            url="https://ads-dashboard-backend.herokuapp.com/api/v1/campaign?platform="+platform;
             let res=await fetch(url);
             let data=await res.json();
             if(res.ok)
@@ -193,7 +193,7 @@ export const Dashboard = () => {
         }
         else if(range!=="")
         {
-            url="http://localhost:5000/api/v1/campaign?days="+range;
+            url="https://ads-dashboard-backend.herokuapp.comapi/v1/campaign?days="+range;
             let res=await fetch(url);
             let data=await res.json();
             if(res.ok)
