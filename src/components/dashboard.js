@@ -9,6 +9,13 @@ import Switch from '@mui/material/Switch';
 import fb from "../assets/fb.png"; 
 import google from "../assets/google.png"; 
 import yt from "../assets/youtube.png";  
+import moment from 'moment'
+import paused from "../assets/paused.png";  
+import live from "../assets/live.png";  
+import exs from "../assets/exsauted.png";  
+import trash from "../assets/trash.png";  
+import edit from "../assets/edit-2.png";  
+
 
 
 var url="http://localhost:5000/api/v1/campaign";
@@ -34,11 +41,28 @@ const imageBodyTemplate = (rowData) => {
 
     return <img src={`${rowData.productId.imageUrl}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.image} className="product-image" />
 }
+const dateTemp = (rowData) => {
+
+    return <div>
+        {`${moment(rowData.dateStart).format('MMM-DD-YYYY')} - ${moment(rowData.dateEnd).format('MMM-DD-YYYY')}`}
+    </div>
+}
+const statusTemp = (rowData) => {
+
+    if(Date.now()>rowData.dateEnd)
+    {
+        return <img src={exs} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.image} className="product-image" />
+    }
+    else
+    {
+        return <img src={live} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.image} className="product-image" />
+    }
+}
 const imagePlatformTemplate = (rowData) => {
     switch (rowData.platform)
     {
         case "Google":
-            return <img src={google} alt=""/>;
+            return <img src={google} alt=""/>; 
         case "Facebook":
             return <img src={fb} alt=""/>;
         case "Youtube":
@@ -50,11 +74,13 @@ const imagePlatformTemplate = (rowData) => {
 
 const header = (
     <div className="table-header">
-        <h5 className="mx-0 my-1">Manage Products</h5>
         <span className="p-input-icon-left">
             <i className="pi pi-search" />
             <InputText type="search" onInput={(e) => null} placeholder="Search..." />
         </span>
+        <div>
+            dfdfsf
+        </div>
     </div>
 );
 export const Dashboard = () => {
@@ -82,21 +108,28 @@ export const Dashboard = () => {
         {
 
         }
-        function deleteC(id)
+        async function deleteC(id)
         {
-            console.log(id);
+            await fetch("http://localhost:5000/api/v1/campaign/"+id, { method: 'DELETE' });
+            getCampaigns();
         }
         return (
             <React.Fragment>
-                <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-5 ebuttonD" onClick={() =>{editC(rowData)}} />
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={() => deleteC(rowData._id)} />
+                <img src={edit} alt="" onClick={() =>{editC(rowData)}} style={{marginRight:"20px"}}/>
+                <img src={trash} alt="" onClick={() => deleteC(rowData._id)} />
             </React.Fragment>
         );
     }
     const imageActiveTemplate = (rowData) => {
-        function handleChange(val,id,data)
+        async function handleChange(val,id,data)
         {
-            
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({"status": !val})
+            };
+            await fetch("http://localhost:5000/api/v1/campaign/"+id, requestOptions);
+            getCampaigns();
         }
         return(
         <span>
@@ -128,10 +161,12 @@ export const Dashboard = () => {
                     <Column field="active" header="Active" sortable style={{ }} body={imageActiveTemplate}></Column>
                     <Column field="name" header="Name" sortable style={{  }}></Column>
                     <Column field="image" header="Image" body={imageBodyTemplate}></Column>
+                    <Column field="platform" header="Date Range" sortable style={{ }} body={dateTemp}></Column> 
                     <Column field="clicks" header="Clicks" sortable style={{ }}></Column>
                     <Column field="budget" header="Budget" sortable style={{ }}></Column>
                     <Column field="location" header="Location" sortable style={{ }}></Column>
                     <Column field="platform" header="Platform" sortable style={{ }} body={imagePlatformTemplate}></Column>
+                    <Column field="platform" header="Status" sortable style={{ }} body={statusTemp}></Column> 
                     <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
                 </DataTable>
             </div>
