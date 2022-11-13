@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Toast } from 'primereact/toast';
-import { Button } from 'primereact/button';
 import { Toolbar } from 'primereact/toolbar';
 import { InputText } from 'primereact/inputtext';
 import Switch from '@mui/material/Switch';
@@ -10,11 +9,12 @@ import fb from "../assets/fb.png";
 import google from "../assets/google.png"; 
 import yt from "../assets/youtube.png";  
 import moment from 'moment'
-import paused from "../assets/paused.png";  
+import { Dropdown } from 'primereact/dropdown';
 import live from "../assets/live.png";  
 import exs from "../assets/exsauted.png";  
 import trash from "../assets/trash.png";  
 import edit from "../assets/edit-2.png";  
+import { Filter } from '@mui/icons-material';
 
 
 
@@ -72,23 +72,20 @@ const imagePlatformTemplate = (rowData) => {
     }
 }
 
-const header = (
-    <div className="table-header">
-        <span className="p-input-icon-left">
-            <i className="pi pi-search" />
-            <InputText type="search" onInput={(e) => null} placeholder="Search..." />
-        </span>
-        <div>
-            dfdfsf
-        </div>
-    </div>
-);
+
 export const Dashboard = () => {
 
     const [data,setData]=useState();
     const [selectedProducts, setSelectedProducts] = useState(null);
 
     const [globalFilter, setGlobalFilter] = useState(null);
+
+    const [platform,setplatform]=useState("");
+    const [range,setrange]=useState("");
+
+
+    let obj=[{label:"Google",value:"Google"},{label:"Youtube",value:"Youtube"},{label:"Facebook",value:"Facebook"}];
+    let obj1=[{label:"30 days",value:30},{label:"60 days",value:60},{label:"90 days",value:90}]
 
     const toast = useRef(null);
     const dt = useRef(null);
@@ -103,6 +100,20 @@ export const Dashboard = () => {
         console.log(res);
         setData(res);
     }
+    const header = (
+        <div className="table-header">
+            <span className="p-input-icon-left">
+                <i className="pi pi-search" />
+                <InputText type="search" onInput={(e) => null} placeholder="Search..." />
+            </span>
+            <div> 
+                <span style={{ marginLeft:"20px" }} >Select Platform</span>           
+                <Dropdown value={platform} options={obj} onChange={(e) => setplatform(e.value)} placeholder="Select a Platform" style={{ marginLeft:"20px",marginRight:"20px" }}/>
+                <span style={{ marginRight:"20px" }} >Select Date</span>           
+                <Dropdown value={range} options={obj1} onChange={(e) => setrange(e.value)} placeholder="Select Days"/>
+            </div>
+        </div>
+    );
     const actionBodyTemplate = (rowData) => {
         function editC()
         {
@@ -142,9 +153,72 @@ export const Dashboard = () => {
         </span>
         )
     }
-    useEffect(()=>{
-        getCampaigns();
-    },[]);
+    async function getCampaignsFilter()
+    {
+        let url="";
+        if(platform!=="" && range!=="")
+        {
+            url="http://localhost:5000/api/v1/campaign?platform="+platform+"&days="+range;
+            let res=await fetch(url);
+            let data=await res.json();
+            if(res.ok)
+            {
+                data=data.map(ele=>{
+                    return { ...ele, id: ele._id }
+                 })
+                console.log(data);
+                setData(data);
+            }
+            else{
+                setData([]);
+            }           
+        }
+        else if(platform!=="")
+        {
+            console.log()
+            url="http://localhost:5000/api/v1/campaign?platform="+platform;
+            let res=await fetch(url);
+            let data=await res.json();
+            if(res.ok)
+            {
+                data=data.map(ele=>{
+                    return { ...ele, id: ele._id }
+                 })
+                console.log(data);
+                setData(data);
+            }
+            else{
+                setData([]);
+            }      
+        }
+        else if(range!=="")
+        {
+            url="http://localhost:5000/api/v1/campaign?days="+range;
+            let res=await fetch(url);
+            let data=await res.json();
+            if(res.ok)
+            {
+                data=data.map(ele=>{
+                    return { ...ele, id: ele._id }
+                 })
+                console.log(data);
+                setData(data);
+            }
+            else{
+                setData([]);
+            }      
+        }
+        
+    }
+     useEffect(()=>{
+        if(platform!=="" || range!==""){
+            getCampaignsFilter();
+        }
+        else
+        {
+            getCampaigns();
+        }
+    },[platform,range]);
     return(
         <div className='dtContainer'> 
         <div className="datatable-crud-demo" style={{marginTop:"1.5%"}}>

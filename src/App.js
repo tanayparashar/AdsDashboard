@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import { AddCampaign } from './components/addCampaign';
 import { Dashboard } from './components/dashboard';
 import ResponsiveAppBar from './components/navbar';
